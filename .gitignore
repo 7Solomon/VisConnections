@@ -1,2 +1,4 @@
-.gitignore
 .venv/
+src/__pycache__/
+src/viewer/__pycache__/
+.gitignore

@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
         # File menu
         fileMenu = mainMenu.addMenu('File')
         exitButton = QAction('Exit', self)
-        exitButton.setShortcut('Ctrl+Q')
+        exitButton.setShortcut('Ctrl+X')
         exitButton.triggered.connect(self.close)
         fileMenu.addAction(exitButton)
 

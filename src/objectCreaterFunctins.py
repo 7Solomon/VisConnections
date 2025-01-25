@@ -1,7 +1,7 @@
 import pyvista as pv
 from src.data import Vector3D, get_profile_dimensions
 
-def create_hea_beam(position: Vector3D, size: int) -> pv.PolyData:
+def create_hea_beam(size: int) -> pv.PolyData:
     """
     Vieliecht position in ObjectManager verschieben, und dort nur translate callen
     """
@@ -9,17 +9,17 @@ def create_hea_beam(position: Vector3D, size: int) -> pv.PolyData:
     length = 1000  # Length of the beam in mm
     
     # Create components
-    steg = pv.Cube(center=(position.x + length/2, position.y, position.z),
+    steg = pv.Cube(center=(length/2, 0, 0),
                   x_length=length,
                   y_length=dimensions.tw,
                   z_length=dimensions.h-2*dimensions.tw)
     
-    top_flansch = pv.Cube(center=(position.x + length/2, position.y, position.z +(dimensions.h/2 - dimensions.tf/2)),
+    top_flansch = pv.Cube(center=(length/2, 0, (dimensions.h/2 - dimensions.tf/2)),
                          x_length=length,
                          y_length=dimensions.b,
                          z_length=dimensions.tf)
     
-    bottom_flansch= pv.Cube(center=(position.x + length/2, position.y, position.z + (-dimensions.h/2 + dimensions.tf/2)),
+    bottom_flansch= pv.Cube(center=(length/2, 0, (-dimensions.h/2 + dimensions.tf/2)),
                            x_length=length,
                            y_length=dimensions.b,
                            z_length=dimensions.tf)
