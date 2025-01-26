@@ -6,7 +6,7 @@ from src.data import Vector3D
 from src.objectCreaterFunctins import stringToProfile
 
 from PyQt6.QtWidgets import QWidget
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, QObject
 
 
 class SceneObject:
@@ -25,39 +25,49 @@ class SceneObject:
         return []
         
 
-class ObjectManager:
+class ObjectManager(QObject):
+    objects_changed = pyqtSignal() 
+
     def __init__(self, plotter: pv.QtInteractor) -> None:
+        super().__init__()
         self.objects: List[SceneObject] = []
         self.plotter = plotter
-        self._actors: Dict[SceneObject, vtkActor] = {}
+        self._actors: Dict[str,vtkActor|SceneObject] = {}
+        self._object_counter = 0
     
     def add_object(self, obj: SceneObject) -> None:
+        key = f"object_{self._object_counter}"
+        self._object_counter += 1
+
         self.objects.append(obj)
         actor = self.plotter.add_mesh(obj.mesh, pickable=True)# maybe add pickable=True
-        self._actors[obj] = actor
-    
+        self._actors[key] = {'actor': actor, 'object': obj}
+        self.objects_changed.emit()
+
     def remove_object(self, obj: SceneObject) -> None:
-        if obj in self.objects:
-            if obj in self._actors:
-                self.plotter.remove_actor(self._actors[obj])
-                del self._actors[obj]
+        if obj in self.objects: 
+            keyOfObject = next(key for (key, val) in self._actors.items() if val['object'] == obj)
+            if keyOfObject:
+                self.plotter.remove_actor(self._actors[keyOfObject]['actor'])
+                del self._actors[keyOfObject]
             self.objects.remove(obj)
 
     def rotate_object(self, obj: SceneObject, rotation: Vector3D) -> None:
-        if obj in self._actors:
+        if obj in [entry['object'] for entry in self._actors.values()]:
             # Update mesh directly
             obj.rotate(rotation)
             self.update_actor(obj)
 
     def update_actor(self, obj: SceneObject) -> None:
         """Re-render specific actor in scene"""
-        if obj in self._actors:
-            self.plotter.remove_actor(self._actors[obj])
-            self._actors[obj] = self.plotter.add_mesh(obj.mesh, pickable=True)
+        keyOfObject = next(key for (key, val) in self._actors.items() if val['object'] == obj)
+        if keyOfObject:
+            self.plotter.remove_actor(self._actors[keyOfObject]['actor'])
+            self._actors[keyOfObject]['actor'] = self.plotter.add_mesh(obj.mesh, pickable=True)
             self.plotter.render()
 
     def clear(self) -> None:
-        for obj in list(self._actors.keys()):
-            self.remove_object(obj)
+        for value in list(self._actors.values()):
+            self.remove_object(value['object'])
         self.objects.clear()
         self._actors.clear()

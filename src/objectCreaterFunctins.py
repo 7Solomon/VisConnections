@@ -26,7 +26,7 @@ def create_hea_beam(size: int) -> pv.PolyData:
     
     # Combine and scale to meters
     beam = steg.merge([top_flansch, bottom_flansch])
-    beam.scale([0.0001, 0.0001, 0.0001])
+    #beam.scale([0.0001, 0.0001, 0.0001])
     return beam
 
 

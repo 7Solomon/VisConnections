@@ -17,23 +17,26 @@ os.environ["QT_API"] = "pyqt6"
 pv.renderer = 'opengl'
 
 class Viewer3DWidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, plotter: QtInteractor, object_manager: ObjectManager, parent = None):
         super().__init__(parent)
         layout = QVBoxLayout()
 
         # Create plotter with OpenGL2 rendering
-        self.plotter = QtInteractor(lighting='none')
+        self.objectManager = object_manager
+        self.plotter = plotter
         self.plotter.renderer.SetUseDepthPeeling(True)
         self.plotter.renderer.SetMaximumNumberOfPeels(4)
         
-        self.objectManager = ObjectManager(self.plotter)
 
         layout.addWidget(self.plotter.interactor)
         self.setLayout(layout)
        
+        self.initVariables()
         self.setup_scene()
         self.setup_picker()
     
+    def initVariables(self):
+        self._active_menu = None
 
     def setup_scene(self):
         # Configure viewport settings
@@ -53,8 +56,9 @@ class Viewer3DWidget(QWidget):
         
         # Add reference grid
         self.plotter.show_grid(
-            color='#808080',
-            font_size=10,
+            #color='#808080',
+            color='white',
+            font_size=12,
             #grid=True,
             #location='all',
             #ticks='inside'
@@ -62,7 +66,7 @@ class Viewer3DWidget(QWidget):
         
         # Set initial camera to isometric view
         self.plotter.camera_position = [
-            (1.5, 1.5, 1.5),  # Camera position
+            (500, 150, 150),  # Camera position
             (0.0, 0.0, 0.0),  # Focal point
             (0.0, 0.0, 1.0)   # Camera up vector
         ]
@@ -115,10 +119,10 @@ class Viewer3DWidget(QWidget):
             return
 
         # Find the object that owns this actor
-        for obj, stored_actor in self.objectManager._actors.items():
-            if stored_actor == actor:
-                print(f"Selected object: {obj}")
-                self.open_mesh_menu(obj)
+        for value in self.objectManager._actors.values():
+            if value['actor'] == actor:
+                print(f"Selected object: {value['object']}")
+                self.open_mesh_menu(value['object'])
                 
     
 
@@ -128,7 +132,8 @@ class Viewer3DWidget(QWidget):
         rotate_action.triggered.connect(lambda: self.handle_rotate(clicked_obj))
         delete_action = menu.addAction("Delete")
         delete_action.triggered.connect(lambda: self.handle_delete(clicked_obj))
-        menu.exec(QCursor.pos())
+        self._active_menu = menu
+        menu.popup(QCursor.pos())
     
     def handle_rotate(self, clicked_obj):
         self.objectManager.rotate_object(clicked_obj, Vector3D(0, 1, 0))
