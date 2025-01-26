@@ -11,7 +11,8 @@ import os
 
 from src.viewer.ObjectManager import ObjectManager, SceneObject
 from src.objectCreaterFunctins import create_hea_beam
-from src.data import Vector3D
+from src.data.util_data import Vector3D
+
 
 os.environ["QT_API"] = "pyqt6"
 pv.renderer = 'opengl'

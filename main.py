@@ -9,7 +9,8 @@ from src.GUIs.MenuBar import MenuBar
 from src.GUIs.ObjectList import ObjectListOverlay
 
 from src.viewer.View3D import Viewer3DWidget
-from src.data import Vector3D
+from src.data.util_data import Vector3D
+
 from src.viewer.ObjectManager import ObjectManager
 
 class MainWindow(QMainWindow):

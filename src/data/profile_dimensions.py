@@ -1,15 +1,6 @@
 from dataclasses import dataclass
 from typing import List
 
-@dataclass(frozen=True)
-class Vector3D:
-    x: int
-    y: int
-    z: int
-    
-    def asTuple(self):
-        return self.x, self.y, self.z
-
 @dataclass
 class ProfileDimensions:
     h: float    # höhe
@@ -18,10 +9,6 @@ class ProfileDimensions:
     tf: float    # flanschdicke
     r: float    # radius Schweissnaht
 
-#@dataclass
-#class ConnectionPoints:
-#    points: List[Vector3D]
-#    
 #HEA_CONNECTION_POINTS = {}
 
 # Dimensions in mm

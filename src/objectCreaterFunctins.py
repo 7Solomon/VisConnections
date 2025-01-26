@@ -1,5 +1,7 @@
 import pyvista as pv
-from src.data import Vector3D, get_profile_dimensions
+from src.data.profile_dimensions import get_profile_dimensions
+from src.data.util_data import Vector3D
+
 
 def create_hea_beam(size: int) -> pv.PolyData:
     """

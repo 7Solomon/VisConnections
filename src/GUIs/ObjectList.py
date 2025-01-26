@@ -52,16 +52,25 @@ class ObjectListOverlay(QWidget):
         self.refresh_items()
         self.parent().objectManager.objects_changed.connect(self.refresh_items)
 
+        # Connect signals
+        self.list_widget.itemSelectionChanged.connect(self._handle_selection)
+
 
     def refresh_items(self):
-        print('Refreshing items')
+        #print('Refreshing items')
         self.list_widget.clear()
         self.list_widget.addItems(self.parent().objectManager._actors.keys())
         self.list_widget.update()
-        print([self.list_widget.item(i).text() for i in range(self.list_widget.count())])
+        #print([self.list_widget.item(i).text() for i in range(self.list_widget.count())])
         
     def add_item(self, name: str):
         self.list_widget.addItem(name)
         
     def clear(self):
         self.list_widget.clear()
+    
+    def _handle_selection(self):
+        selected_items = self.list_widget.selectedItems()
+        for item in selected_items:
+           self.parent().objectManager.toggle_show_connection_points(self.parent().objectManager._actors[item.text()]['object'], True)
+        
