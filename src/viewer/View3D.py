@@ -119,22 +119,15 @@ class Viewer3DWidget(QWidget):
         if actor is None:
             return
 
-        print("\nDebug Info:")
-        print(f"Picked actor ID: {hex(id(actor))}")
-        
-        for i, value in enumerate(self.objectManager._actors.values()):
-            print(f"\nObject {i}:")
-            print(f"Main actor ID: {hex(id(value['actor']))}")
-            print(f"Connection actor ID: {hex(id(value['connections']['actor']))}")
-            
-            if (value['actor'] is actor) or (value['connections']['actor'] is actor):
-                print(f"Match found! Selected object: {value['object']}")
+        # Find the object that owns this actor
+        for value in self.objectManager._actors.values():
+            if value['actor'] == actor:
+                print(f"Selected object: {value['object']}")
                 self.open_mesh_menu(value['object'])
-                break      
+                
     
 
-    def open_mesh_menu(self, clicked_obj):
-        print('Opening mesh menu')  
+    def open_mesh_menu(self, clicked_obj): 
         menu = QMenu(self)
         rotate_action = menu.addAction("Rotate")
         rotate_action.triggered.connect(lambda: self.handle_rotate(clicked_obj))
@@ -144,6 +137,10 @@ class Viewer3DWidget(QWidget):
         change_visibility_action.setChecked(True)
         change_visibility_action.triggered.connect(lambda checked: self.objectManager.toggle_show_object(clicked_obj, checked))
         menu.addAction(change_visibility_action)
+        change_connection_visibility_action = QAction("Connections", self, checkable=True)
+        change_connection_visibility_action.setChecked(True)
+        change_connection_visibility_action.triggered.connect(lambda checked: self.objectManager.toggle_show_connection_points(clicked_obj, checked))
+        menu.addAction(change_connection_visibility_action)
         self._active_menu = menu
         menu.popup(QCursor.pos())
     
