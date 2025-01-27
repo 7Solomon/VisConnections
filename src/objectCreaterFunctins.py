@@ -3,12 +3,11 @@ from src.data.profile_dimensions import get_profile_dimensions
 from src.data.util_data import Vector3D
 
 
-def create_hea_beam(size: int) -> pv.PolyData:
+def create_hea_beam(type_number: int, length: int) -> pv.PolyData:
     """
     Vieliecht position in ObjectManager verschieben, und dort nur translate callen
     """
-    dimensions = get_profile_dimensions('HEA', size)
-    length = 1000  # Length of the beam in mm
+    dimensions = get_profile_dimensions('HEA', type_number)
     
     # Create components
     steg = pv.Cube(center=(length/2, 0, 0),

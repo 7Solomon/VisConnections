@@ -1,7 +1,7 @@
 import time
 import pyvista as pv
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QMenu
-from PyQt6.QtGui import QCursor
+from PyQt6.QtGui import QCursor, QAction
 
 from pyvistaqt import QtInteractor
 import numpy as np
@@ -119,20 +119,31 @@ class Viewer3DWidget(QWidget):
         if actor is None:
             return
 
-        # Find the object that owns this actor
-        for value in self.objectManager._actors.values():
-            if value['actor'] == actor:
-                print(f"Selected object: {value['object']}")
+        print("\nDebug Info:")
+        print(f"Picked actor ID: {hex(id(actor))}")
+        
+        for i, value in enumerate(self.objectManager._actors.values()):
+            print(f"\nObject {i}:")
+            print(f"Main actor ID: {hex(id(value['actor']))}")
+            print(f"Connection actor ID: {hex(id(value['connections']['actor']))}")
+            
+            if (value['actor'] is actor) or (value['connections']['actor'] is actor):
+                print(f"Match found! Selected object: {value['object']}")
                 self.open_mesh_menu(value['object'])
-                
+                break      
     
 
     def open_mesh_menu(self, clicked_obj):
+        print('Opening mesh menu')  
         menu = QMenu(self)
         rotate_action = menu.addAction("Rotate")
         rotate_action.triggered.connect(lambda: self.handle_rotate(clicked_obj))
         delete_action = menu.addAction("Delete")
         delete_action.triggered.connect(lambda: self.handle_delete(clicked_obj))
+        change_visibility_action = QAction("Visible", self, checkable=True)
+        change_visibility_action.setChecked(True)
+        change_visibility_action.triggered.connect(lambda checked: self.objectManager.toggle_show_object(clicked_obj, checked))
+        menu.addAction(change_visibility_action)
         self._active_menu = menu
         menu.popup(QCursor.pos())
     
@@ -154,7 +165,7 @@ class Viewer3DWidget(QWidget):
         self.objectManager.add_object(obj)
 
     def add_hea(self, position= Vector3D(0,0,0), color='white'):
-        self.objectManager.add_object(SceneObject('HEA', position, 100))
+        self.objectManager.add_object(SceneObject(type_name='HEA', type_number=100, position=position, length=1000))
         
     def clear_scene(self):
         self.objectManager.clear()
