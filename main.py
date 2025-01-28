@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
         self.menu_bar.toggle_object_list_triggered.connect(self.toggle_object_list_action)
         self.menu_bar.toggle_axes_triggered.connect(self.toggle_axes)
         self.menu_bar.toggle_grid_triggered.connect(self.toggle_grid)
-        self.menu_bar.add_sphere_triggered.connect(self.add_example_objects)
+        self.menu_bar.add_scene_object.connect(self.add_scene_object)
     def setup_object_list(self):
         self.object_list = ObjectListOverlay(self)
         self.object_list.move(self.width() - self.object_list.width() - 20, 60)
@@ -97,8 +97,10 @@ class MainWindow(QMainWindow):
         return super().eventFilter(obj, event)
     
     def add_example_objects(self):
-        self.viewer.add_hea(position=Vector3D(0,0,0))
-
+        self.objectManager.add_object('HEA', 100, Vector3D(0,0,0), 1000)
+    def add_scene_object(self, type, dim, position, len):
+        self.objectManager.add_object(type, dim, position, len)
+        
 
 
 def main():

@@ -2,8 +2,10 @@ from PyQt6.QtWidgets import QMenuBar
 from PyQt6.QtGui import QAction
 from PyQt6.QtCore import pyqtSignal
 
+from src.GUIs.AddObjectPopUp import AddObjectPopup
+
 class MenuBar(QMenuBar):
-    add_sphere_triggered = pyqtSignal()
+    add_scene_object = pyqtSignal()
     toggle_axes_triggered = pyqtSignal(bool)
     toggle_grid_triggered = pyqtSignal(bool)
     toggle_object_list_triggered = pyqtSignal(bool)
@@ -23,8 +25,8 @@ class MenuBar(QMenuBar):
 
     def setup_mesh_menu(self):
         mesh_menu = self.addMenu('Mesh')
-        add_sphere = QAction('Add Sphere', self)
-        add_sphere.triggered.connect(self.add_sphere_triggered.emit)
+        add_sphere = QAction('Add Object', self)
+        add_sphere.triggered.connect(self.show_add_popup)
         mesh_menu.addAction(add_sphere)
 
     def setup_view_menu(self):
@@ -47,3 +49,8 @@ class MenuBar(QMenuBar):
         view_menu.addAction(self.toggle_axes)
         view_menu.addAction(self.toggle_grid)
         view_menu.addAction(self.toggle_object_list)
+    
+    def show_add_popup(self):
+        popup = AddObjectPopup(self)
+        popup.object_created.connect(lambda type, dim, pos, len: self.add_scene_object.emit(type, dim, pos, len))
+        popup.exec()

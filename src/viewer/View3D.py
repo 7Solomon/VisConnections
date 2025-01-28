@@ -120,10 +120,9 @@ class Viewer3DWidget(QWidget):
             return
 
         # Find the object that owns this actor
-        for value in self.objectManager._actors.values():
-            if value['actor'] == actor:
-                print(f"Selected object: {value['object']}")
-                self.open_mesh_menu(value['object'])
+        for obj in self.objectManager.objects:
+            if obj.actor == actor:
+                self.open_mesh_menu(obj)
                 
     
 
@@ -155,14 +154,6 @@ class Viewer3DWidget(QWidget):
     #def on_click_position(self, click_position):
     #    """Handle click position"""
     #    print(f"Clicked at position: {click_position}")
-
-    
-    ### Object Management
-    def add_object(self, obj):
-        self.objectManager.add_object(obj)
-
-    def add_hea(self, position= Vector3D(0,0,0), color='white'):
-        self.objectManager.add_object(SceneObject(type_name='HEA', type_number=100, position=position, length=1000))
         
     def clear_scene(self):
         self.objectManager.clear()

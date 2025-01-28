@@ -24,16 +24,17 @@ IPE_DIMENSIONS = {
     300: ProfileDimensions(h=300, b=150, tw=7.1, tf=10.7, r=15),
 }
 
-def get_profile_dimensions(profile_type: str, size: int) -> ProfileDimensions:
-    dimension_map = {
-        'HEA': HEA_DIMENSIONS,
-        'IPE': IPE_DIMENSIONS
-    }
+DIMENSION_MAP = {
+    'HEA': HEA_DIMENSIONS,
+    'IPE': IPE_DIMENSIONS
+}
     
-    if profile_type not in dimension_map:
+
+def get_profile_dimensions(profile_type: str, size: int) -> ProfileDimensions:
+    if profile_type not in DIMENSION_MAP:
         raise ValueError(f"Unknown profile type: {profile_type}")
-    if size not in dimension_map[profile_type]:
+    if size not in DIMENSION_MAP[profile_type]:
         raise ValueError(f"Unknown size {size} for profile type {profile_type}")
         
-    return dimension_map[profile_type][size]
+    return DIMENSION_MAP[profile_type][size]
 
