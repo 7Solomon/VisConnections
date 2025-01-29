@@ -1,5 +1,6 @@
 from typing import Dict, List
 from vtkmodules.vtkRenderingCore import vtkActor
+from pyvista.core.pointset import PolyData
 import pyvista as pv
 
 from src.data.connection_data import ConnectionPoint, ConnectionPoints
@@ -13,13 +14,13 @@ from PyQt6.QtCore import pyqtSignal, QObject
 class SceneObject:
     def __init__(self, type_name: str, type_number, position: Vector3D, length: int, obj_counter: str, oriantation: Vector3D = Vector3D(1, 0, 0)) -> None:
         self.id =   f"object_{obj_counter}"
-        self.position = position
+        self.origin = position
         self.length = length
         self.oriantation = oriantation
 
         # Mesh generieren
         self.mesh = stringToProfile[type_name](type_number, length)
-        self.mesh.translate(position.asTuple())
+        self.mesh.translate(self.origin.asTuple(), inplace=True)
 
         # Connection Points
         self.actor = None
@@ -32,17 +33,26 @@ class SceneObject:
         self.connection_actor = actor
 
 
-    def rotate(self, axis: Vector3D) -> None:
-        #self.mesh = self.mesh.rotate_vector(axis.asTuple(), 90, point=self.position.asTuple())  # könnte Falsch sein, da es die verischibung in der x achse nicht berücksichtigt
-        print('Rotating')
-        #self.mesh.rotate_y(90)
-        #self.oriantation = axis
+    def rotate(self, axis: Vector3D, degree: int = 90) -> None:
+        self.mesh = self.mesh.rotate_vector(axis.asTuple(), degree, point=self.origin.asTuple())  # könnte Falsch sein, da es die verischibung in der x achse nicht berücksichtigt
+        self.actor.GetMapper().SetInputData(self.mesh)
+        self.actor.GetMapper().Update()
+    def rotate_arround_axis(self, axis: str = 'x') -> None:
+        if axis == 'x':
+            self.rotate(Vector3D(1, 0, 0))
+        elif axis == 'y':
+            self.rotate(Vector3D(0, 1, 0))
+        elif axis == 'z':
+            self.rotate(Vector3D(0, 0, 1))
+        else:
+            raise ValueError(f"Axis {axis} not supported")
+
     def get_connection_point_mash(self) -> ConnectionPoints:
         connection_points = ConnectionPoints([
             ConnectionPoint(Vector3D(0, 0, 0)),
             ConnectionPoint(Vector3D(self.length, 0, 0))
         ])
-        connection_points.translate(self.position)
+        connection_points.translate(self.origin)
         self.connection_point_mash = pv.PolyData(connection_points.asNumpyArray(), force_float=False) # force_float=False, weil asNumpyArray returns int
         return self.connection_point_mash
 
@@ -93,6 +103,7 @@ class ObjectManager(QObject):
     def rotate_object(self, obj: SceneObject, rotation: Vector3D) -> None:
         if obj in self.objects:
             obj.rotate(rotation)
+            #obj.actor.mesh = mesh
     
     def toggle_show_object(self, obj: SceneObject, state :bool) -> None:
         if obj in self.objects:

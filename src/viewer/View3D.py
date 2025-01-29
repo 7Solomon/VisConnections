@@ -9,6 +9,7 @@ import numpy as np
 # Für QtBindings
 import os
 
+from src.GUIs.MeshMenu import MeshMenu
 from src.viewer.ObjectManager import ObjectManager, SceneObject
 from src.objectCreaterFunctins import create_hea_beam
 from src.data.util_data import Vector3D
@@ -34,6 +35,7 @@ class Viewer3DWidget(QWidget):
        
         self.initVariables()
         self.setup_scene()
+        self.setup_mesh_menu()
         self.setup_picker()
     
     def initVariables(self):
@@ -81,7 +83,6 @@ class Viewer3DWidget(QWidget):
         ## Better Performance
         self.plotter.render_window.SetDesiredUpdateRate(15.0)
 
-
     # View Settings
     def toggle_axes_visibility(self, visible=True):
         """Toggle coordinate system visibility"""
@@ -122,31 +123,20 @@ class Viewer3DWidget(QWidget):
         # Find the object that owns this actor
         for obj in self.objectManager.objects:
             if obj.actor == actor:
-                self.open_mesh_menu(obj)
-                
-    
+                self.open_mesh_menu(obj)                
 
     def open_mesh_menu(self, clicked_obj): 
-        menu = QMenu(self)
-        rotate_action = menu.addAction("Rotate")
-        rotate_action.triggered.connect(lambda: self.handle_rotate(clicked_obj))
-        delete_action = menu.addAction("Delete")
-        delete_action.triggered.connect(lambda: self.handle_delete(clicked_obj))
-        change_visibility_action = QAction("Visible", self, checkable=True)
-        change_visibility_action.setChecked(True)
-        change_visibility_action.triggered.connect(lambda checked: self.objectManager.toggle_show_object(clicked_obj, checked))
-        menu.addAction(change_visibility_action)
-        change_connection_visibility_action = QAction("Connections", self, checkable=True)
-        change_connection_visibility_action.setChecked(True)
-        change_connection_visibility_action.triggered.connect(lambda checked: self.objectManager.toggle_show_connection_points(clicked_obj, checked))
-        menu.addAction(change_connection_visibility_action)
-        self._active_menu = menu
-        menu.popup(QCursor.pos())
-    
-    def handle_rotate(self, clicked_obj):
-        self.objectManager.rotate_object(clicked_obj, Vector3D(0, 1, 0))
-
-
+        self.clicked_obj = clicked_obj
+        self._active_menu = self.mesh_menu
+        self.mesh_menu.popup(QCursor.pos())
+    def setup_mesh_menu(self):
+        self.mesh_menu = MeshMenu(self)
+        self.mesh_menu.delete_signal.connect(lambda: self.handle_delete(self.clicked_obj))
+        self.mesh_menu.rotate_signal.connect(lambda axis: self.handle_rotate(self.clicked_obj, axis))
+        self.mesh_menu.visibility_signal.connect(lambda checked: self.objectManager.toggle_show_object(self.clicked_obj, checked))
+        
+    def handle_rotate(self, clicked_obj:SceneObject, axis:str):
+        clicked_obj.rotate_arround_axis(axis)
     def handle_delete(self, clicked_obj):
         self.objectManager.remove_object(clicked_obj)
 

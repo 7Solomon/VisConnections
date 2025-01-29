@@ -121,7 +121,6 @@ class ObjectListOverlay(QWidget):
             visible_action.triggered.connect(lambda checked: self._handle_visible(item, checked))
             menu.addAction(visible_action)
 
-            print(item.text())
             menu.exec(event.globalPos())
     def _handle_visible(self, item, checked):
         obj = self.parent().objectManager.get_object_with_id(item.text())

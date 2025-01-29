@@ -1,3 +1,4 @@
+import numpy as np
 import pyvista as pv
 from src.data.profile_dimensions import get_profile_dimensions
 from src.data.util_data import Vector3D
@@ -25,8 +26,16 @@ def create_hea_beam(type_number: int, length: int) -> pv.PolyData:
                            y_length=dimensions.b,
                            z_length=dimensions.tf)
     
-    # Combine and scale to meters
+    ## Kombination
     beam = steg.merge([top_flansch, bottom_flansch])
+
+    # Look
+    #beam.point_data["Metallic"] = 1.0  # Full metallic
+    #beam.point_data["Roughness"] = 0.3  # Slight roughness
+    #beam.point_data["Colors"] = np.tile([0.8, 0.8, 0.85], (beam.n_points, 1))
+   
+
+
     #beam.scale([0.0001, 0.0001, 0.0001])
     return beam
 
