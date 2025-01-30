@@ -5,6 +5,7 @@ import sys
 
 from pyvistaqt import QtInteractor
 
+from src.data.profile_dimensions import ProfileType
 from src.GUIs.MenuBar import MenuBar
 from src.GUIs.ObjectList import ObjectListOverlay
 
@@ -97,7 +98,7 @@ class MainWindow(QMainWindow):
         return super().eventFilter(obj, event)
     
     def add_example_objects(self):
-        self.objectManager.add_object('HEA', 100, Vector3D(0,0,0), 1000)
+        self.objectManager.add_object(ProfileType.HEA, 100, Vector3D(0,0,0), 1000)
     def add_scene_object(self, type, dim, position, len):
         self.objectManager.add_object(type, dim, position, len)
         

@@ -4,7 +4,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIntValidator
 
 from src.data.util_data import Vector3D
-from src.data.profile_dimensions import DIMENSION_MAP
+from src.data.profile_dimensions import DIMENSION_MAP, ProfileType, get_available_sizes
 from src.viewer.ObjectManager import SceneObject
 
 class InputWidget(QWidget):
@@ -16,7 +16,7 @@ class InputWidget(QWidget):
         type_layout = QHBoxLayout()
         type_label = QLabel("Type:")
         self.type_combo = QComboBox()
-        self.type_combo.addItems(DIMENSION_MAP.keys())
+        self.type_combo.addItems(([type.value for type in ProfileType]))
         type_layout.addWidget(type_label)
         type_layout.addWidget(self.type_combo)
         
@@ -74,8 +74,12 @@ class InputWidget(QWidget):
 
     def update_dimensions(self, selected_type):
         self.dim_combo.clear()
-        filtered_dims = [str(_) for _ in DIMENSION_MAP[selected_type]]
-        self.dim_combo.addItems(filtered_dims)
+        try:
+            profile_type = ProfileType(selected_type)
+            sizes = get_available_sizes(profile_type)
+            self.dim_combo.addItems([str(size) for size in sizes])
+        except ValueError as e:
+            print(f"Error updating dimensions: {e}")
 
     def get_values(self):
         return (
@@ -90,7 +94,7 @@ class InputWidget(QWidget):
         )
 
 class AddObjectPopup(QMenu):
-    object_created = pyqtSignal(str,int,Vector3D,int)
+    object_created = pyqtSignal(str,ProfileType,Vector3D,int)
 
     def __init__(self, parent=None):
         super().__init__(parent)

@@ -9,6 +9,7 @@ from src.data.util_data import Vector3D
 @dataclass
 class ConnectionPoint:
     position: Vector3D
+    oriantation: Vector3D
     type: str = "standard" 
     def translate(self, translation: Vector3D):
         self.position += translation

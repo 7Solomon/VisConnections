@@ -1,14 +1,14 @@
 import numpy as np
 import pyvista as pv
-from src.data.profile_dimensions import get_profile_dimensions
-from src.data.util_data import Vector3D
+from src.data.connection_dimensions import ConnectionType, LochplattenDimensions
+from src.data.profile_dimensions import ProfileType, get_profile_dimensions
 
 
 def create_hea_beam(type_number: int, length: int) -> pv.PolyData:
     """
     Vieliecht position in ObjectManager verschieben, und dort nur translate callen
     """
-    dimensions = get_profile_dimensions('HEA', type_number)
+    dimensions = get_profile_dimensions(ProfileType.HEA, type_number)
     
     # Create components
     steg = pv.Cube(center=(length/2, 0, 0),
@@ -64,5 +64,29 @@ def create_hea_beam(type_number: int, length: int) -> pv.PolyData:
 #    beam.scale([0.001, 0.001, 0.001])
 #    return beam
 
+def create_lochplatte(dimensions: LochplattenDimensions) -> pv.PolyData:
+    """
+    Create a plate with holes
+    """
+    # Create plate
+    plate = pv.Cube(center=(0, 0, 0),
+                     x_length=dimensions.length,
+                     y_length=dimensions.t,
+                     z_length=dimensions.height)
+    
+    # Create holes
+    #hole_positions = [
+    #    (dimensions.d/2, dimensions.h/2 - dimensions.d/2),
+    #    (dimensions.b/2 - dimensions.d/2, dimensions.h/2 - dimensions.d/2),
+    #    (dimensions.b/2 - dimensions.d/2, -dimensions.h/2 + dimensions.d/2),
+    #    (dimensions.d/2, -dimensions.h/2 + dimensions.d/2)
+    #]
+    #holes = [pv.Cylinder(radius=dimensions.d/2, height=dimensions.t, center=(x, y, 0), direction=(0, 0, 1)) for x, y in hole_positions]
+    #plate = plate.merge(holes)
+    
+    return plate
+
+
 # Map profile type to function
-stringToProfile = {'HEA': create_hea_beam,'IPE': lambda: print('Not implemented yet')}
+stringToProfile = {ProfileType.HEA: create_hea_beam, ProfileType.IPE: lambda: print('Not implemented yet')}
+stringToConnection ={ConnectionType.Lochplatte: create_lochplatte}

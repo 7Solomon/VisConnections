@@ -1,5 +1,17 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import List
+
+class ProfileType(Enum):
+    HEA = 'HEA'
+    IPE = 'IPE'
+
+    @classmethod
+    def get_types(cls) -> List[str]:
+        """Returns list of available profile types"""
+        return [member.value for member in cls]
+
+@dataclass
 
 @dataclass
 class ProfileDimensions:
@@ -25,16 +37,20 @@ IPE_DIMENSIONS = {
 }
 
 DIMENSION_MAP = {
-    'HEA': HEA_DIMENSIONS,
-    'IPE': IPE_DIMENSIONS
+    ProfileType.HEA: HEA_DIMENSIONS,
+    ProfileType.HEA: IPE_DIMENSIONS
 }
     
 
-def get_profile_dimensions(profile_type: str, size: int) -> ProfileDimensions:
-    if profile_type not in DIMENSION_MAP:
-        raise ValueError(f"Unknown profile type: {profile_type}")
-    if size not in DIMENSION_MAP[profile_type]:
-        raise ValueError(f"Unknown size {size} for profile type {profile_type}")
-        
-    return DIMENSION_MAP[profile_type][size]
+def get_available_sizes(profile_type: ProfileType) -> List[int]:
+    """Returns available sizes for given profile type"""
+    return sorted(list(DIMENSION_MAP[profile_type].keys()))
 
+def get_profile_dimensions(profile_type: ProfileType, size: int) -> ProfileDimensions:
+    if profile_type not in DIMENSION_MAP:
+        raise ValueError(f'Unknown profile type: {profile_type}')
+    if size not in DIMENSION_MAP[profile_type]:
+        available = get_available_sizes(profile_type)
+        raise ValueError(f'Size {size} not available for {profile_type.value}. Available sizes: {available}')
+    
+    return DIMENSION_MAP[profile_type][size]

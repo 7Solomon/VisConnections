@@ -2,11 +2,12 @@ from PyQt6.QtWidgets import QMenuBar
 from PyQt6.QtGui import QAction, QCursor
 from PyQt6.QtCore import pyqtSignal, QPoint
 
+from src.data.profile_dimensions import ProfileType
 from src.data.util_data import Vector3D
 from src.GUIs.AddObjectPopUp import AddObjectPopup
 
 class MenuBar(QMenuBar):
-    add_scene_object = pyqtSignal(str,int,Vector3D,int)
+    add_scene_object = pyqtSignal(str,ProfileType,Vector3D,int)
     toggle_axes_triggered = pyqtSignal(bool)
     toggle_grid_triggered = pyqtSignal(bool)
     toggle_object_list_triggered = pyqtSignal(bool)

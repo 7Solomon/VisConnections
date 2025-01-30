@@ -9,7 +9,9 @@ import numpy as np
 # Für QtBindings
 import os
 
+from src.data.connection_dimensions import ConnectionType
 from src.GUIs.MeshMenu import MeshMenu
+from src.GUIs.ConnectorMenu import ConnectorMenu
 from src.viewer.ObjectManager import ObjectManager, SceneObject
 from src.objectCreaterFunctins import create_hea_beam
 from src.data.util_data import Vector3D
@@ -106,6 +108,7 @@ class Viewer3DWidget(QWidget):
             callback=self.one_mesh_picked,
             show=False,
             show_message=False
+            ## Maybe here the drag options of but ka how
         )
         
         ## Track right clicks
@@ -119,11 +122,18 @@ class Viewer3DWidget(QWidget):
         actor = self.plotter.picked_actor
         if actor is None:
             return
+        
+        # Search if connector clicked
+        for obj in self.objectManager.objects:
+            if obj.connection_actor == actor:
+                self.open_connector_menu(obj)
+                break         
 
         # Find the object that owns this actor
         for obj in self.objectManager.objects:
             if obj.actor == actor:
-                self.open_mesh_menu(obj)                
+                self.open_mesh_menu(obj)       
+
 
     def open_mesh_menu(self, clicked_obj): 
         self.clicked_obj = clicked_obj
@@ -134,12 +144,21 @@ class Viewer3DWidget(QWidget):
         self.mesh_menu.delete_signal.connect(lambda: self.handle_delete(self.clicked_obj))
         self.mesh_menu.rotate_signal.connect(lambda axis: self.handle_rotate(self.clicked_obj, axis))
         self.mesh_menu.visibility_signal.connect(lambda checked: self.objectManager.toggle_show_object(self.clicked_obj, checked))
-        
+    def open_connector_menu(self, clicked_obj):  # No setup because need clicked obj in init
+        connector_menu = ConnectorMenu(clicked_obj, parent=self)
+        connector_menu.add_connection_signal.connect(lambda: self.handle_add_connection(clicked_obj))
+        self._active_menu = connector_menu
+        connector_menu.popup(QCursor.pos())
+
     def handle_rotate(self, clicked_obj:SceneObject, axis:str):
         clicked_obj.rotate_arround_axis(axis)
     def handle_delete(self, clicked_obj):
         self.objectManager.remove_object(clicked_obj)
-
+    
+    def handle_add_connection(self, clicked_obj):
+        conn_point = clicked_obj.connection_points.points[0]
+        self.objectManager.add_connection(ConnectionType.Lochplatte, conn_point.position, conn_point.oriantation)
+        
 
     #def on_click_position(self, click_position):
     #    """Handle click position"""

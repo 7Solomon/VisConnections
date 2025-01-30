@@ -19,3 +19,15 @@ class Vector3D:
             y=self.y + oy,
             z=self.z + oz
         )
+    def __sub__(self, other: Union['Vector3D', tuple[int, int, int]]) -> 'Vector3D':
+        if isinstance(other, tuple):
+            ox, oy, oz = other
+        else:
+            ox, oy, oz = other.x, other.y, other.z
+        return Vector3D(
+            x=self.x - ox,
+            y=self.y - oy,
+            z=self.z - oz
+        )
+    def length_in_direction(self, direction: 'Vector3D') -> int:
+        return self.x * direction.x + self.y * direction.y + self.z * direction.z
