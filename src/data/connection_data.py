@@ -23,3 +23,4 @@ class ConnectionPoints:
            p.translate(translation)
     def asNumpyArray(self):
         return np.array([p.position.asTuple() for p in self.points])
+    

@@ -1,6 +1,6 @@
 import numpy as np
 import pyvista as pv
-from src.data.connection_dimensions import ConnectionType, LochplattenDimensions
+from src.data.connection_dimensions import ConnectionType, LochplattenDimensions, LochplattenType
 from src.data.profile_dimensions import ProfileType, get_profile_dimensions
 
 
@@ -64,27 +64,55 @@ def create_hea_beam(type_number: int, length: int) -> pv.PolyData:
 #    beam.scale([0.001, 0.001, 0.001])
 #    return beam
 
-def create_lochplatte(dimensions: LochplattenDimensions) -> pv.PolyData:
-    """
-    Create a plate with holes
-    """
+def create_standard_plate(dimensions: LochplattenDimensions)-> pv.PolyData:
     # Create plate
-    plate = pv.Cube(center=(0, 0, 0),
-                     x_length=dimensions.length,
-                     y_length=dimensions.t,
-                     z_length=dimensions.height)
+    plate = pv.Cube(center=(0, 0, dimensions.tm/2),
+                    x_length=abs(dimensions.length),
+                    y_length=dimensions.height,
+                    z_length=dimensions.t)
     
     # Create holes
-    #hole_positions = [
-    #    (dimensions.d/2, dimensions.h/2 - dimensions.d/2),
-    #    (dimensions.b/2 - dimensions.d/2, dimensions.h/2 - dimensions.d/2),
-    #    (dimensions.b/2 - dimensions.d/2, -dimensions.h/2 + dimensions.d/2),
-    #    (dimensions.d/2, -dimensions.h/2 + dimensions.d/2)
-    #]
-    #holes = [pv.Cylinder(radius=dimensions.d/2, height=dimensions.t, center=(x, y, 0), direction=(0, 0, 1)) for x, y in hole_positions]
-    #plate = plate.merge(holes)
+    print('P1, p2, e1 and e2 are direction less, please implement du kek')
+    hole = pv.Cylinder(radius=dimensions.d/2, height=dimensions.t)
+    holes = hole.copy()
+    for i in range(dimensions.nx):
+        for j in range(dimensions.ny):
+            hole_position = (dimensions.e1 + i*dimensions.p1, dimensions.e2 + j*dimensions.p2, 0)
+            holes = holes.merge(hole.copy().translate(hole_position))
     
-    return plate
+    # Combine plate and holes
+    plate_with_holes = plate.merge(holes)
+    return plate_with_holes
+
+def create_double_plate(dimensions: LochplattenDimensions) -> pv.PolyData:
+    # Create plate
+    plate_1 = pv.Cube(center=(0, dimensions.tm/2, 0),
+                    x_length=abs(dimensions.length),
+                    y_length=dimensions.t,
+                    z_length=dimensions.height)
+    # Create holes
+    hole = pv.Cylinder(radius=dimensions.d/2, height=dimensions.t)
+    holes = hole.copy()
+    for i in range(dimensions.nx):
+        for j in range(dimensions.ny):
+            hole_position = (dimensions.e1 + i*dimensions.p1, dimensions.e2 + j*dimensions.p2, 0)
+            holes = holes.merge(hole.copy().translate(hole_position))
+    
+    plate_1_with_holes = plate_1.merge(holes)
+    plate_2 = plate_1.copy().translate((0, -dimensions.tm - dimensions.t, 0))
+    plate_2.rotate_y(180)
+
+    plate_with_holes = plate_1_with_holes.merge(plate_2)
+    return plate_with_holes
+
+def create_lochplatte(dimensions: LochplattenDimensions) -> pv.PolyData:
+    if dimensions.type == LochplattenType.STANDART:
+        return create_standard_plate(dimensions)
+    elif dimensions.type == LochplattenType.DOUBLE:
+        return create_double_plate(dimensions)
+    else:
+        raise NotImplementedError(f"LochplattenType {dimensions.type} not implemented yet")
+
 
 
 # Map profile type to function

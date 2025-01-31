@@ -146,7 +146,7 @@ class Viewer3DWidget(QWidget):
         self.mesh_menu.visibility_signal.connect(lambda checked: self.objectManager.toggle_show_object(self.clicked_obj, checked))
     def open_connector_menu(self, clicked_obj):  # No setup because need clicked obj in init
         connector_menu = ConnectorMenu(clicked_obj, parent=self)
-        connector_menu.add_connection_signal.connect(lambda: self.handle_add_connection(clicked_obj))
+        connector_menu.add_connection_signal.connect(lambda connection_type: self.handle_add_connection(clicked_obj, connection_type))
         self._active_menu = connector_menu
         connector_menu.popup(QCursor.pos())
 
@@ -155,9 +155,8 @@ class Viewer3DWidget(QWidget):
     def handle_delete(self, clicked_obj):
         self.objectManager.remove_object(clicked_obj)
     
-    def handle_add_connection(self, clicked_obj):
-        conn_point = clicked_obj.connection_points.points[0]
-        self.objectManager.add_connection(ConnectionType.Lochplatte, conn_point.position, conn_point.oriantation)
+    def handle_add_connection(self, clicked_obj, connection_type):
+        self.objectManager.add_connection(clicked_obj, connection_type)
         
 
     #def on_click_position(self, click_position):

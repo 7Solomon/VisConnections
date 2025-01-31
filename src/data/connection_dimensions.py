@@ -4,18 +4,20 @@ from dataclasses import dataclass, fields
 from enum import Enum
 from typing import List
 
-class LochAbstandsType(Enum):
-    STANDART = 1
-    VERSETZT = 2
+class LochplattenType(Enum):
+    STANDART = 'standard_plate'
+    DOUBLE = 'double_plate'
+    VERSETZT = 'offset_bolts'
 
 @dataclass
 class LochplattenDimensions:
     length: int
     height: int
+    tm: int
     t: int
 
     # Speific
-    type: LochAbstandsType
+    type: LochplattenType
     e1: int
     e2: int
     p1: int
@@ -32,3 +34,4 @@ class LochplattenDimensions:
 
 class ConnectionType(Enum):
     Lochplatte='Lochplatte' 
+

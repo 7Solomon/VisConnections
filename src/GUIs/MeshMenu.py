@@ -7,8 +7,6 @@ class MeshMenu(QMenu):
     rotate_signal = pyqtSignal(str)
     visibility_signal = pyqtSignal(bool)
     delete_signal = pyqtSignal()
-    add_connection_signal = pyqtSignal()
-
     def __init__(self, parent=None):
         super().__init__("Mesh", parent)
         self.setup_actions()
@@ -17,7 +15,6 @@ class MeshMenu(QMenu):
         self.setup_rotation_action()
         self.setup_visibility_action()
         self.setup_delete_action()
-        self.setup_add_connection_action()
     
     ## actions
     def setup_type_action():
@@ -40,7 +37,3 @@ class MeshMenu(QMenu):
         delete_action = QAction('Delete', self)
         delete_action.triggered.connect(lambda: self.delete_signal.emit())
         self.addAction(delete_action)
-    def setup_add_connection_action(self):
-        add_connection_action = QAction('Add Connection', self)
-        add_connection_action.triggered.connect(lambda: self.add_connection_signal.emit())
-        self.addAction(add_connection_action)
