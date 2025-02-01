@@ -53,7 +53,6 @@ class MainWindow(QMainWindow):
     def setup_object_list(self):
         self.object_list = ObjectListOverlay(self)
         self.object_list.move(self.width() - self.object_list.width() - 20, 60)
-        
     def toggle_axes(self):
         print('Toggle Axes')
         #self.viewer.toggle_axes_visibility(not self.axes_visible)

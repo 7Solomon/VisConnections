@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QFrame, QMenu
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QFrame, QMenu, QDockWidget
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QMouseEvent, QAction
 
@@ -18,29 +18,23 @@ class ListWidget(QListWidget):
         
         super().mousePressEvent(event)
 
-class ObjectListOverlay(QWidget):
+class ObjectListOverlay(QDockWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         # Qt.WindowType.FramelessWindowHint |
         # self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setFeatures(QDockWidget.DockWidgetFeature.DockWidgetMovable |
+                        QDockWidget.DockWidgetFeature.DockWidgetFloatable)
         self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
         self.setStyleSheet("""
-            QWidget {
-                background-color: rgba(43, 43, 43, 230);
+            QDockWidget {
+                background: #2b2b2b;
                 color: white;
                 border: 1px solid #3f3f3f;
-                border-radius: 5px;
             }
-            QListWidget {
-                background-color: rgba(35, 35, 35, 230);
-                border: none;
-                color: white;
-            }
-            QListWidget::item {
-                padding: 5px;
-            }
-            QListWidget::item:selected {
-                background-color: #404040;
+            QDockWidget::title {
+                background: #353535;
+                padding: 6px;
             }
         """)
         # Variables
@@ -50,7 +44,15 @@ class ObjectListOverlay(QWidget):
         self.setup_ui()
 
     def setup_ui(self):
-        layout = QVBoxLayout(self)
+        content = QWidget()
+        layout = QVBoxLayout(content)
+        self.setWidget(content)
+        self.resize(200, 400)
+        # Set allowed dock areas
+        self.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea | 
+                            Qt.DockWidgetArea.RightDockWidgetArea)
+
+
         layout.setContentsMargins(5, 5, 5, 5)
         layout.setSpacing(2)
         

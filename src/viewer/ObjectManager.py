@@ -78,33 +78,10 @@ class SceneObject:
 
 
 class SceneConnectorObject:
-    def __init__(self, object_1, connection_type, object_2=None) -> None:
-        pos1 = object_1.connection_points.points[0].position
-        oriantation = object_1.connection_points.points[0].oriantation
-        if object_2 is not None:
-            pos2 = object_2.connection_points.points[0].position
-        else:
-            pos2 = oriantation*100 + pos1
-
-        self.origin = pos1
-        pos_vector = pos2 - pos1
-        self.length = pos_vector.length_in_direction(oriantation)
-        ## Add Function for matching type to dimesnion please Future jj
-        print('Connection Type:', connection_type)
-        print('But makes Lochplatte because of dcebugging')
-
-        print('Here add ABFRAGE OF E1, E2, P1, P2, D, NX, NY')
-        self.dimensions = LochplattenDimensions(
-                                        type=LochplattenType.DOUBLE, 
-                                        length=self.length,
-                                        height=object_1.dimensions.h,
-                                        tm=object_1.dimensions.tw, 
-                                        t=10,
-                                        e1=100, e2=100,p1=100, p2=100, d=10, nx=10, ny=10
-                                    )
-        
+    def __init__(self, dimensions: LochplattenDimensions, origin: Vector3D) -> None:
+        self.dimensions = dimensions
         self.mesh = stringToConnection[ConnectionType.Lochplatte](self.dimensions)
-        self.mesh.translate(self.origin.asTuple(), inplace=True)
+        self.mesh.translate(origin.asTuple(), inplace=True)
         #self.mesh = stringToConnection[type_name](type_number, length)
         
         # init vars
@@ -147,10 +124,8 @@ class ObjectManager(QObject):
         self.objects.append(obj)
         self.toggle_show_connection_points(obj, False)
         self.objects_changed.emit()
-    def add_connection(self, obj, connection_type, obj_2=None):
-
-        obj = SceneConnectorObject(obj, connection_type, obj_2)
-
+    def add_connection(self,dimensions: LochplattenDimensions) -> None:
+        obj = SceneConnectorObject(dimensions)
         actor = self.plotter.add_mesh(obj.mesh, pickable=True)
         obj.set_actor(actor)
 
