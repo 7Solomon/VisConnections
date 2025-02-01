@@ -4,7 +4,7 @@ Eine Python Anwendung zur Visualisierung und Analyse von Bauteilen und Verbindun
 
 ## Funktionen
 
-- 3D-Visualisierung von Standard-Stahlbauteilen:
+#### 3D-Visualisierung von Standard-Stahlbauteilen:
   - HEA-Träger 
   - IPE-Träger (geplant)
   - Verbindungsplatten
@@ -12,16 +12,20 @@ Eine Python Anwendung zur Visualisierung und Analyse von Bauteilen und Verbindun
 <img src="/assets/HEA.png" width="300" height="200" alt="HEA">
 <img src="/assets/add_menu.png" width="300" height="200" alt="HEA">
 </div>
-- Interaktive Objektmanipulation:
+
+#### Interaktive Objektmanipulation:
   - Rotation um X-, Y-, Z-Achsen
   - Veränderung der Position
   - Sichtbar/ nicht Sichtbar
 <img src="/assets/interaction_menu.png" width="300" height="200" alt="InteractionsMenu">
 
 
-- Verbindungspunkt-Visualisierung und -Verwaltung
-- Benutzeroberfläche mit:
-  - Objektlisten-Overlay
+#### Connection point Visualisierung und Verwaltung
+  - Management von Mesh clicking
+  - Visualisieren von möglichen Verbindungspunkten (und derer Oriantation)
+
+#### Benutzeroberfläche mit:
+  - Objektlist-Overlay
   - Kontextmenüs
   - Anpassbare Ansichten
 <img src="/assets/object_menu.png" width="300" height="200" alt="ObjectMenu">
