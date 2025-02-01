@@ -8,9 +8,10 @@ Eine Python Anwendung zur Visualisierung und Analyse von Bauteilen und Verbindun
   - HEA-Träger 
   - IPE-Träger (geplant)
   - Verbindungsplatten
+<div style="display: flex; justify-content: center; gap: 20px;">
 <img src="/assets/HEA.png" width="300" height="200" alt="HEA">
 <img src="/assets/add_menu.png" width="300" height="200" alt="HEA">
-
+</div>
 - Interaktive Objektmanipulation:
   - Rotation um X-, Y-, Z-Achsen
   - Veränderung der Position
