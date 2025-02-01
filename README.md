@@ -30,7 +30,6 @@ Eine Python Anwendung zur Visualisierung und Analyse von Bauteilen und Verbindun
 Erstellt mit:
 - PyQt6 für die Benutzeroberfläche
 - PyVista für 3D-Visualisierung
-- NumPy für Berechnungen
 - Python Dataclasses für Bauteil-Definitionen
 
 ## Geplant
